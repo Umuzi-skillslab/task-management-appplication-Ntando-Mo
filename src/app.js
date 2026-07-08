@@ -54,18 +54,11 @@ function displayAllTasks() {
 }
 
 // Function missing parameter
-function findTaskByTitle() {
+function findTaskByTitle(title) {
     // Missing: title parameter
     // Wrong loop construct
-    let i = 0;
-    while (i < taskList.length) {
-        if (taskList[i].title === title) {  // Should use ===
-            return taskList[i];
-        }
-        // Missing: i++
-        i++;
-    }
-    return undefined;
+    if (typeof title !== 'string') return undefined;
+    return taskList.find(task => task.title === title);
 }
 
 // Function with type checking issues
@@ -116,8 +109,11 @@ function mergeTasks(list1, list2) {
 }
 
 // Recursive function with error
-function countCompletedTasks(tasks, index) {
+function countCompletedTasks(tasks, index=0) {
     // Missing: base case check
+    if (!Array.isArray(tasks) || index >= tasks.length) {
+        return 0;
+    }
     // Missing: null/undefined check
     
     if (tasks[index].completed) {
@@ -128,31 +124,24 @@ function countCompletedTasks(tasks, index) {
 }
 
 // Function with Math object issues
-function calculateAveragePriority() {
+function calculateAveragePriority(tasksArray) {
     //Added missing conditional check to prevent division by zero
-    if (taskList.length === 0) {
+    if (!Array.isArray(tasksArray) || tasksArray.length === 0) {
         return 0;
     }
-
-    let total = 0;
-    // Missing: check for empty array
-    for (const task of taskList) {
-        total = total + task.priority;
-    }
-    // Should use Math.round or toFixed
-    return total / taskList.length;
+    // Used functional .reduce() instead of a loop
+    const total = tasksArray.reduce((sum, task) => sum + task.priority, 0);
+    
+    // Fix: Use Math.round to limit to 1 decimal place
+    return Math.round((total / tasksArray.length) * 10) / 10;
 }
 
 // Filter function with errors
 function getHighPriorityTasks(minPriority) {
-    const highPriority = [];
-    // Should use array methods (filter)
-    for (let i = 0; i < taskList.length; i++) {
-        if (taskList[i].priority > minPriority) {
-            highPriority.push(taskList[i]);
-        }
-    }
-    return highPriority;
+    if (typeof minPriority !== 'number') return [];
+
+    //Replaced imperative loop with functional .filter()
+    return taskList.filter(task => task.priority > minPriority);
 }
 
 // Object with missing methods
@@ -164,6 +153,23 @@ const TaskManager = {
     
     getTotalTasks: function() {
         return this.tasks.length;
+    },
+
+    // Method using array method (.map)
+    getTaskTitles: function() {
+        return this.tasks.map(task => task.title);
+    },
+
+    // Method using array method (.every)
+    areAllTasksCompleted: function() {
+        if (this.tasks.length === 0) return false;
+        return this.tasks.every(task => task.completed);
+    },
+
+    //  Higher-order function demonstration (takes a function as a parameter)
+    executeOnTasks: function(callbackFunction) {
+        if (typeof callbackFunction !== 'function') return;
+        this.tasks.forEach(callbackFunction);
     }
 };
 
