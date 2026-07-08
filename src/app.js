@@ -192,6 +192,15 @@ const TaskManager = {
   },
 };
 
+// Utilizes a rest parameter to handle an indefinite number of arguments safely
+function logMultipleTasks(...tasks) {
+    if (tasks.length === 0) {
+        console.log("No tasks provided.");
+        return;
+    }
+    tasks.forEach(task => console.log(`Task to process: ${task}`));
+}
+
 // Exports
 export {
   Task,

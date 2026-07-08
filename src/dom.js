@@ -1,43 +1,54 @@
 //Proper imports
-import { taskList, addTask } from "./app.js";
-import { saveToStorage } from "./utils.js";
+import { taskList, addTask, Task } from "./app.js";
+import { saveToStorage, loadFromStorage } from "./utils.js";
 
 //Initialize safely ONLY after DOM is fully loaded (Listener 1)
 document.addEventListener("DOMContentLoaded", setupEventListeners);
 
 function setupEventListeners() {
-  //Corrected selector (querySelector for class)
-  const addButton = document.querySelector(".add-task-btn");
-  const taskListContainer = document.getElementById("task-list");
-  const priorityInput = document.getElementById("priority");
-  const titleInput = document.getElementById("title");
+    const savedTasks = loadFromStorage();
+    if (savedTasks && savedTasks.length > 0) {
+        savedTasks.forEach(taskData => {
+            // Re-instantiate the Task class so methods like toggleCompletion() still work
+            const restoredTask = new Task(taskData.title, taskData.description, taskData.priority);
+            restoredTask.id = taskData.id; // Keep the original ID
+            restoredTask.completed = taskData.completed; // Keep the original status
+            taskList.push(restoredTask);
+        });
+        displayTasks(); // Render them to the screen
+    }
 
-  //Null check 1
-  if (addButton) {
-    addButton.addEventListener("click", handleAddTask); // Listener 2
-  }
+    const addButton = document.querySelector(".add-task-btn");
+    const taskListContainer = document.getElementById("task-list");
+    const priorityInput = document.getElementById("priority");
+    const titleInput = document.getElementById("title");
 
-  //Null check 2
-  if (taskListContainer) {
-    //Event delegation setup on the parent container (Listener 3)
-    taskListContainer.addEventListener("click", handleTaskClick);
-  }
+    // --- Event Listeners with Null Checks ---
+    
+    // Null check 1
+    if (addButton) {
+        addButton.addEventListener("click", handleAddTask); // Listener 2
+    }
 
-  // Extra listeners to hit the 5+ requirement
-  if (priorityInput) {
-    priorityInput.addEventListener("keypress", (e) => {
-      // Listener 4
-      if (e.key === "Enter") handleAddTask(e);
-    });
-  }
+    // Null check 2
+    if (taskListContainer) {
+        // Event delegation setup on the parent container (Listener 3)
+        taskListContainer.addEventListener("click", handleTaskClick);
+    }
 
-  if (titleInput) {
-    titleInput.addEventListener(
-      "focus",
-      () => (titleInput.style.outline = "2px solid #4CAF50"),
-    ); // Listener 5
-    titleInput.addEventListener("blur", () => (titleInput.style.outline = "")); // Listener 6
-  }
+    if (priorityInput) {
+        priorityInput.addEventListener("keypress", (e) => {
+            // Listener 4
+            if (e.key === "Enter") handleAddTask(e);
+        });
+    }
+
+    if (titleInput) {
+        // Listener 5
+        titleInput.addEventListener("focus", () => (titleInput.style.outline = "2px solid #4CAF50")); 
+        // Listener 6
+        titleInput.addEventListener("blur", () => (titleInput.style.outline = "")); 
+    }
 }
 
 function handleAddTask(event) {
