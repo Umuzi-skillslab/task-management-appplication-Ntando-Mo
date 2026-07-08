@@ -1,71 +1,119 @@
-// DOM Manipulation - Starter Code with Errors
+//Proper imports
 import { taskList, addTask } from './app.js';
+import { saveToStorage } from './utils.js';
 
-// Missing: proper DOM selectors
+//Initialize safely ONLY after DOM is fully loaded (Listener 1)
+document.addEventListener("DOMContentLoaded", setupEventListeners);
+
 function setupEventListeners() {
-    // Wrong selector method
-    var addButton = document.getElementById(".add-task-btn");  // Wrong - mixing ID and class
-    var taskInput = document.querySelector("task-input");  // Missing #
+    //Corrected selector (querySelector for class)
+    const addButton = document.querySelector(".add-task-btn"); 
+    const taskListContainer = document.getElementById("task-list");
+    const priorityInput = document.getElementById("priority");
+    const titleInput = document.getElementById("title");
+
+    //Null check 1
+    if (addButton) {
+        addButton.addEventListener("click", handleAddTask); // Listener 2
+    }
+
+    //Null check 2
+    if (taskListContainer) {
+        //Event delegation setup on the parent container (Listener 3)
+        taskListContainer.addEventListener("click", handleTaskClick); 
+    }
+
+    // Extra listeners to hit the 5+ requirement
+    if (priorityInput) {
+        priorityInput.addEventListener("keypress", (e) => { // Listener 4
+            if (e.key === "Enter") handleAddTask(e);
+        });
+    }
     
-    // Missing: null checks before adding listeners
-    addButton.addEventListener("click", handleAddTask);
-    
-    // Missing: other event listeners for form submission, etc.
+    if (titleInput) {
+        titleInput.addEventListener("focus", () => titleInput.style.outline = "2px solid #4CAF50"); // Listener 5
+        titleInput.addEventListener("blur", () => titleInput.style.outline = ""); // Listener 6
+    }
 }
 
-// Function with DOM manipulation errors
-function handleAddTask() {
-    var titleInput = document.getElementById("title");
-    var descInput = document.getElementById("description");
-    
-    // No validation
-    // Should use event.preventDefault() if form
-    
-    var title = titleInput.value;
-    var description = descInput.value;
-    
-    // Missing: priority input
-    
-    addTask(title, description, 1);
+function handleAddTask(event) {
+    //preventDefault where needed
+    if (event) event.preventDefault(); 
+
+    const titleInput = document.getElementById("title");
+    const descInput = document.getElementById("description");
+    const priorityInput = document.getElementById("priority");
+
+    if (!titleInput || !descInput || !priorityInput) return;
+
+    const title = titleInput.value.trim();
+    const description = descInput.value.trim();
+    const priority = parseInt(priorityInput.value);
+
+    // Basic validation
+    if (!title || !description || isNaN(priority)) {
+        alert("Please fill in all fields completely.");
+        return;
+    }
+
+    // Add task and update UI/Storage
+    addTask(title, description, priority);
+    saveToStorage(taskList);
     displayTasks();
     
-    // Missing: clear inputs after adding
+    //Clear inputs after adding
+    titleInput.value = "";
+    descInput.value = "";
+    priorityInput.value = "";
+    titleInput.focus();
 }
 
-// Function that should use better selectors
 function displayTasks() {
     const container = document.getElementById("task-list");
-    if (!container) return; // Null check
+    if (!container) return;
     
-    container.innerHTML = ""; // Clear existing content
+    container.innerHTML = ""; 
     
     for (const task of taskList) {
         const div = document.createElement("div");
+        div.className = "task-item";
         
-        //Object destructuring 
-        const { title, description, priority } = task;
+        // Add data attribute for event delegation target tracking
+        div.dataset.id = task.id;
         
-        //Template literal  (Multi-line HTML injection)
+        const { title, description, priority, completed } = task;
+        
+        // Using template literals to build complex innerHTML safely
         div.innerHTML = `
-            <h3>${title}</h3>
-            <p>${description}</p>
-            <p>Priority: ${priority}</p>
+            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; opacity: ${completed ? '0.6' : '1'}">
+                <h3 style="text-decoration: ${completed ? 'line-through' : 'none'}">${title}</h3>
+                <p>${description}</p>
+                <p>Priority: ${priority} | Status: ${completed ? 'Done' : 'Pending'}</p>
+                <button class="toggle-btn">Toggle Completion</button>
+            </div>
         `;
         container.appendChild(div);
     }
 }
 
-// Function with event handling issues
+//Proper event delegation
 function handleTaskClick(event) {
     if (!event.target) return;
     
-    const taskId = event.target.id;
-   
-    console.log(`Task clicked: ${taskId}`);
+    // Check if the actual clicked element was our toggle button
+    if (event.target.classList.contains("toggle-btn")) {
+        // Traverse up the DOM tree to find the parent div holding the data-id
+        const taskElement = event.target.closest('.task-item');
+        if (!taskElement) return;
+
+        const taskId = parseInt(taskElement.dataset.id);
+        
+        // Find task in array and toggle it
+        const targetTask = taskList.find(task => task.id === taskId);
+        if (targetTask) {
+            targetTask.toggleCompletion();
+            saveToStorage(taskList);
+            displayTasks();
+        }
+    }
 }
-
-// Missing: JSON conversion functions
-// Missing: functions to save/load tasks from localStorage
-
-// Initialize (wrong placement - should use DOMContentLoaded)
-setupEventListeners();

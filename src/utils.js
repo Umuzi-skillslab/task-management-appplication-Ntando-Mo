@@ -1,47 +1,45 @@
-// Utilities - Starter Code (WITH ERRORS AND MISSING FEATURES)
+//Replaced var with const
+const priorities = ["low", "medium", "high"];
 
-// Bug: Not using proper data structures
+//Array destructuring 
 const [lowPriority, mediumPriority, highPriority] = priorities;
 
-// Bug: Missing JSON operations
+//Added JSON.stringify for proper storage
 function saveToStorage(data) {
-    // Bug: Not converting to JSON
-    localStorage.setItem("tasks", data);
+    if (!data) return;
+    localStorage.setItem("tasks", JSON.stringify(data)); 
 }
 
+// Added JSON.parse to properly load objects
 function loadFromStorage() {
-    // Bug: Not parsing JSON
     const data = localStorage.getItem("tasks");
-    return data;
+    return data ? JSON.parse(data) : []; 
 }
 
-// Bug: Incorrect Math object usage
+//Returns a whole integer ID instead of a decimal
 function generateRandomId() {
-    return Math.floor(Math.random() * 1000000);  // Bug: Returns decimal, not integer
+    return Math.floor(Math.random() * 1000000);  
 }
 
-// Bug: Poor string manipulation
+//Proper string manipulation (Pure Function)
 function formatTaskName(name) {
-    // Bug: Not using string methods properly
     if (typeof name !== 'string') return "";
-    //Capitalize first letter, lower case the rest, and trim whitespace
     return name.trim().charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
 
-// Bug: Incorrect boolean logic
+//Incorrect boolean logic and operators fixed
 function isHighPriority(task) {
-
-    // Add safety check for undefined
     if (!task || typeof task.priority === 'undefined') {
         return false;
     }
-
-    if (task.priority === "high") {  // Bug: Using ==
-        return true;  // Bug: Should return boolean
+    //Using strict equality === instead of ==
+    if (task.priority === "high") {  
+        return true;  // Returning actual boolean
     }
-    return false;
+    return false; // Returning actual boolean
 }
 
+//Proper module exports
 export { 
     priorities, 
     saveToStorage, 
@@ -50,11 +48,3 @@ export {
     formatTaskName, 
     isHighPriority 
 };
-
-// Missing: Class definitions
-// Missing: Inheritance example
-// Missing: Module exports -- fixed
-// Missing: Proper use of operators (logical, comparison)
-// Missing: Recursion
-// Missing: Functional programming patterns
-// Missing: Proper scope demonstration
