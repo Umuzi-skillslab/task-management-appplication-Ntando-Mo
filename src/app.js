@@ -48,8 +48,8 @@ function addTask(title, description, priority) {
 // Function with incorrect loop
 function displayAllTasks() {
     // Wrong loop - should use for-of
-    for (let i = 0; i <= taskList.length; i++) {  // Off-by-one error
-        console.log(taskList[i].title);
+    for (const task of taskList) {
+        console.log(task.title);
     }
 }
 
@@ -59,10 +59,11 @@ function findTaskByTitle() {
     // Wrong loop construct
     let i = 0;
     while (i < taskList.length) {
-        if (taskList[i].title == title) {  // Should use ===
+        if (taskList[i].title === title) {  // Should use ===
             return taskList[i];
         }
         // Missing: i++
+        i++;
     }
     return undefined;
 }
@@ -128,10 +129,15 @@ function countCompletedTasks(tasks, index) {
 
 // Function with Math object issues
 function calculateAveragePriority() {
+    //Added missing conditional check to prevent division by zero
+    if (taskList.length === 0) {
+        return 0;
+    }
+
     let total = 0;
     // Missing: check for empty array
-    for (let i = 0; i < taskList.length; i++) {
-        total = total + taskList[i].priority;
+    for (const task of taskList) {
+        total = total + task.priority;
     }
     // Should use Math.round or toFixed
     return total / taskList.length;
