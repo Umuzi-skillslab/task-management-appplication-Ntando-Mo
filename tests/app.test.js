@@ -131,3 +131,44 @@ describe('Module exports/imports', () => {
         expect(generateRandomId).toBeDefined();
     });
 });
+describe('Error Handling', () => {
+
+    test('updateTaskPriority with invalid data types returns false', () => {
+        addTask('Invalid Test', 'Desc', 1);
+        // Pass strings instead of numbers to trigger validation logic
+        const result = updateTaskPriority("wrong_id", "high");
+        expect(result).toBe(false);
+    });
+
+    test('findTaskByTitle handles invalid input types gracefully', () => {
+        // Passing null or numbers instead of a valid string title
+        expect(findTaskByTitle(null)).toBeUndefined();
+        expect(findTaskByTitle(999)).toBeUndefined();
+    });
+});
+
+describe('Edge Cases', () => {
+    test('isHighPriority handles objects missing the priority property', () => {
+        const weirdTask = { title: 'No Priority' }; 
+        // Should safely return false instead of throwing a TypeError
+        expect(isHighPriority(weirdTask)).toBe(false); 
+    });
+
+    test('formatTaskName safely returns empty string for non-string inputs', () => {
+        // Passing numbers and null to a string manipulation function
+        expect(formatTaskName(123)).toBe("");
+        expect(formatTaskName(null)).toBe("");
+    });
+
+    test('getHighPriorityTasks handles scenarios where zero tasks meet the criteria', () => {
+        // Clear list and add only low priority tasks
+        taskList.length = 0; 
+        addTask('Low Task 1', 'Desc', 1);
+        addTask('Low Task 2', 'Desc', 1);
+        
+        // Searching for priority 5 should return an empty array, not undefined or an error
+        const highPriority = getHighPriorityTasks(5);
+        expect(highPriority.length).toBe(0);
+        expect(Array.isArray(highPriority)).toBe(true);
+    });
+});
