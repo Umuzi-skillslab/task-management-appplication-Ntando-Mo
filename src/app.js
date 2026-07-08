@@ -5,7 +5,7 @@ import { generateRandomId } from "./utils.js";
 const taskList = []; //Fixed with const
 let taskCounter = 0; // Should use let or const
 
-// Task class with errors
+// Defines the blueprint for standard tasks. Includes an automatic ID generator and defaults completion status to false.
 class Task {
   constructor(title, description, priority) {
     this.id = generateRandomId();
@@ -16,7 +16,7 @@ class Task {
     // Missing: id property
   }
 
-  // Missing: method to toggle completion
+  // method to toggle completion
   toggleCompletion() {
     this.completed = !this.completed;
   }
@@ -27,7 +27,7 @@ class Task {
   }
 }
 
-// Subtask class with inheritance issues
+// Demonstrates OOP inheritance. Calls super() to inherit core Task properties while adding a unique parentTask property.
 class SubTask extends Task {
   constructor(title, description, priority, parentTask) {
     // Missing: super() call
@@ -41,7 +41,8 @@ class SubTask extends Task {
   }
 }
 
-//Validation & Try-Catch #1
+//Validation & Try-Catch
+// Implements a try-catch block to handle task creation. Validates that the title is a non-empty string before instantiating the Task object.
 function addTask(title, description, priority) {
   try {
     // Check for null/undefined/empty strings
@@ -68,6 +69,7 @@ function displayAllTasks() {
 }
 
 // Function missing parameter
+// Safely queries the array using the .find() method. Includes strict type checking to prevent errors from invalid search inputs.
 function findTaskByTitle(title) {
   // Edge case: null or non-string inputs
   if (typeof title !== "string" || title === null) {
@@ -77,8 +79,7 @@ function findTaskByTitle(title) {
   return taskList.find((task) => task.title === title);
 }
 
-// Function with type checking issues
-// safe validation for tests
+// Validates inputs to ensure strict typing. Iterates through the global task list to update priority and exits early upon success.
 function updateTaskPriority(taskId, newPriority) {
   if (typeof taskId !== "number" || typeof newPriority !== "number") {
     // Meaningful error message for invalid data types
@@ -97,8 +98,8 @@ function updateTaskPriority(taskId, newPriority) {
   return false;
 }
 
-// Function that should use destructuring but doesn't
 // Validation & Try-Catch
+// Utilizes object destructuring to safely extract specific properties, preventing accidental mutation of the entire task object.
 function getTaskDetails(task) {
   try {
     // Prevent destructuring null or undefined objects
@@ -113,8 +114,7 @@ function getTaskDetails(task) {
   }
 }
 
-// Function missing spread/rest operators
-// 2. Validation & Try-Catch #2
+// Pure function utilizing the ES6 spread operator to combine two arrays without mutating the original inputs.
 function mergeTasks(listA, listB) {
   try {
     // Ensure both parameters are actually arrays
@@ -128,14 +128,12 @@ function mergeTasks(listA, listB) {
   }
 }
 
-// Recursive function with error
+// Recursive function that navigates through a nested list of tasks. The base case ensures the recursion stops when the array is empty.
 function countCompletedTasks(tasks, index = 0) {
   // Missing: base case check
   if (!Array.isArray(tasks) || index >= tasks.length) {
     return 0;
   }
-  // Missing: null/undefined check
-
   if (tasks[index].completed) {
     return 1 + countCompletedTasks(tasks, index + 1);
   } else {
@@ -143,8 +141,7 @@ function countCompletedTasks(tasks, index = 0) {
   }
 }
 
-// Function with Math object issues
-// Validation (Handling Edge Cases)
+// Calculates total priority using the higher-order .reduce() method. Includes a guard clause to prevent NaN errors from empty arrays.
 function calculateAveragePriority(tasks) {
   // Edge case: check for undefined or non-arrays
   if (!Array.isArray(tasks)) {
@@ -161,7 +158,7 @@ function calculateAveragePriority(tasks) {
   return Number((total / tasks.length).toFixed(1));
 }
 
-// Filter function with errors
+// Utilizes the higher-order .filter() method to return a new array containing only tasks that meet or exceed the specified threshold.
 function getHighPriorityTasks(minPriority) {
   if (typeof minPriority !== "number") return [];
 
@@ -172,9 +169,6 @@ function getHighPriorityTasks(minPriority) {
 // Object with missing methods
 const TaskManager = {
   tasks: taskList,
-
-  // Missing: method to add task using functional approach
-  // Missing: method using array methods (map, filter, reduce)
 
   getTotalTasks: function () {
     return this.tasks.length;
@@ -197,9 +191,6 @@ const TaskManager = {
     this.tasks.forEach(callbackFunction);
   },
 };
-
-// Export issues - should be a module
-// Missing: proper module exports
 
 // Exports
 export {
