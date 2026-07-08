@@ -42,9 +42,18 @@ function isHighPriority(task) {
     return false;
 }
 
+export { 
+    priorities, 
+    saveToStorage, 
+    loadFromStorage, 
+    generateRandomId, 
+    formatTaskName, 
+    isHighPriority 
+};
+
 // Missing: Class definitions
 // Missing: Inheritance example
-// Missing: Module exports
+// Missing: Module exports -- fixed
 // Missing: Proper use of operators (logical, comparison)
 // Missing: Recursion
 // Missing: Functional programming patterns

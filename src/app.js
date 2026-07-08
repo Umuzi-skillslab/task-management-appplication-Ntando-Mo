@@ -1,4 +1,5 @@
 // Task Management Application - Starter Code with Errors
+import { generateRandomId } from './utils.js';
 
 // Global variables (scoping issues)
 const taskList = [];  // Missing var/let/const
@@ -179,3 +180,20 @@ const TaskManager = {
 
 // Export issues - should be a module
 // Missing: proper module exports
+
+// Exports
+export { 
+    Task, 
+    SubTask, 
+    taskList, 
+    addTask, 
+    displayAllTasks, 
+    findTaskByTitle, 
+    updateTaskPriority, 
+    getTaskDetails, 
+    mergeTasks, 
+    countCompletedTasks, 
+    calculateAveragePriority, 
+    getHighPriorityTasks, 
+    TaskManager 
+};
