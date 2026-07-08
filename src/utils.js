@@ -1,7 +1,7 @@
 // Utilities - Starter Code (WITH ERRORS AND MISSING FEATURES)
 
 // Bug: Not using proper data structures
-const priorities = ["low", "medium", "high"];
+const [lowPriority, mediumPriority, highPriority] = priorities;
 
 // Bug: Missing JSON operations
 function saveToStorage(data) {

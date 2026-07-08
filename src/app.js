@@ -21,8 +21,8 @@ class Task {
     }
     
     getInfo() {
-        // Wrong string concatenation - should use template literals
-        return "Task: " + this.title + " - Priority: " + this.priority;
+        // Wrong string concatenation - should use template literals -- Fixed
+        return `Task: ${this.title} - Priority: ${this.priority}`;
     }
 }
 
@@ -36,7 +36,7 @@ class SubTask extends Task {
 
     //Overriding getInfo method with errors
     getInfo() {
-        return "SubTask: " + this.title + " (Parent: " + this.parentTask + ") - Priority: " + this.priority;
+        return `SubTask: ${this.title} (Parent: ${this.parentTask}) - Priority: ${this.priority}`;
     }
 }
 
@@ -91,29 +91,23 @@ function updateTaskPriority(taskId, newPriority) {
 
 // Function that should use destructuring but doesn't
 function getTaskDetails(task) {
-    // Should destructure task properties
-    const title = task.title;
-    const description = task.description;
-    const priority = task.priority;
-    const completed = task.completed;
+    if (!task) return null;
     
-    return {
-        title: title,
-        description: description,
-        priority: priority,
-        completed: completed
-    };
+    //Object destructuring 
+    const { title, description, priority, completed } = task;
+    
+    //Spread operator (creates a shallow copy of the object)
+    return { ...task, detailsAccessed: true };
 }
 
 // Function missing spread/rest operators
-function mergeTasks(list1, list2) {
+function mergeTasks(...lists) {
     // Should use spread operator
     const merged = [];
-    for (let i = 0; i < list1.length; i++) {
-        merged.push(list1[i]);
-    }
-    for (let i = 0; i < list2.length; i++) {
-        merged.push(list2[i]);
+    for (const list of lists) {
+        if (Array.isArray(list)) {
+            merged.push(...list); //Spread operator 
+        }
     }
     return merged;
 }

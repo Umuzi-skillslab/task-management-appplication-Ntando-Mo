@@ -33,31 +33,34 @@ function handleAddTask() {
 
 // Function that should use better selectors
 function displayTasks() {
-    var container = document.getElementById("task-list");
+    const container = document.getElementById("task-list");
+    if (!container) return; // Null check
     
-    // Should clear existing content first
-    // Missing: null check
+    container.innerHTML = ""; // Clear existing content
     
-    // Inefficient - should use template literals and insertAdjacentHTML
-    for (var i = 0; i < taskList.length; i++) {
-        var div = document.createElement("div");
-        div.innerHTML = "<h3>" + taskList[i].title + "</h3>";
-        div.innerHTML = div.innerHTML + "<p>" + taskList[i].description + "</p>";
-        container.appendChild(div);
+    for (const task of taskList) {
+        const div = document.createElement("div");
         
-        // Missing: task ID, completion status, event handlers for delete/complete
+        //Object destructuring 
+        const { title, description, priority } = task;
+        
+        //Template literal  (Multi-line HTML injection)
+        div.innerHTML = `
+            <h3>${title}</h3>
+            <p>${description}</p>
+            <p>Priority: ${priority}</p>
+        `;
+        container.appendChild(div);
     }
 }
 
 // Function with event handling issues
 function handleTaskClick(event) {
-    // Missing: event.target check
-    // Missing: proper event delegation
+    if (!event.target) return;
     
-    var taskId = event.target.id;  // Wrong way to get task ID
-    
-    // Should toggle task completion
-    console.log("Task clicked: " + taskId);
+    const taskId = event.target.id;
+   
+    console.log(`Task clicked: ${taskId}`);
 }
 
 // Missing: JSON conversion functions
