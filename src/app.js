@@ -41,19 +41,22 @@ class SubTask extends Task {
     }
 }
 
-// Functions with errors
-
-// Function with no error handling
+//Validation & Try-Catch #1
 function addTask(title, description, priority) {
-    if (typeof title !== 'string' || typeof description !== 'string' || typeof priority !== 'number') {
-        console.error("Invalid parameter types provided to addTask");
+    try {
+        // Check for null/undefined/empty strings
+        if (typeof title !== 'string' || title.trim() === '') {
+            throw new Error("Task title must be a valid, non-empty string.");
+        }
+        
+        const newTask = new Task(title, description, priority);
+        taskList.push(newTask);
+        return newTask;
+    } catch (error) {
+        //error message
+        console.error("Failed to add task:", error.message);
         return null;
     }
-    
-    const newTask = new Task(title, description, priority); // Replaced var with const
-    taskList.push(newTask);
-    taskCounter++;
-    return newTask;
 }
 
 // Function with incorrect loop
@@ -66,18 +69,20 @@ function displayAllTasks() {
 
 // Function missing parameter
 function findTaskByTitle(title) {
-    // Missing: title parameter
-    // Wrong loop construct
-    if (typeof title !== 'string') return undefined;
+    // Edge case: null or non-string inputs
+    if (typeof title !== 'string' || title === null) {
+        console.error("Search Error: Title must be a valid string.");
+        return undefined;
+    }
     return taskList.find(task => task.title === title);
 }
 
 // Function with type checking issues
+// safe validation for tests
 function updateTaskPriority(taskId, newPriority) {
-    // Missing: typeof check for parameters
-    // Missing: null/undefined validation
-    // Handle null/undefined values
     if (typeof taskId !== 'number' || typeof newPriority !== 'number') {
+        // Meaningful error message for invalid data types
+        console.error("Validation Error: taskId and newPriority must be valid numbers.");
         return false;
     }
 
@@ -91,26 +96,34 @@ function updateTaskPriority(taskId, newPriority) {
 }
 
 // Function that should use destructuring but doesn't
+// Validation & Try-Catch 
 function getTaskDetails(task) {
-    if (!task) return null;
-    
-    //Object destructuring 
-    const { title, description, priority, completed } = task;
-    
-    //Spread operator (creates a shallow copy of the object)
-    return { ...task, detailsAccessed: true };
+    try {
+        // Prevent destructuring null or undefined objects
+        if (!task || typeof task !== 'object' || Array.isArray(task)) {
+            throw new Error("Invalid task object provided for destructuring.");
+        }
+        const { title, description, priority } = task;
+        return { title, description, priority };
+    } catch (error) {
+        console.error("Destructuring Error:", error.message);
+        return {}; 
+    }
 }
 
 // Function missing spread/rest operators
-function mergeTasks(...lists) {
-    // Should use spread operator
-    const merged = [];
-    for (const list of lists) {
-        if (Array.isArray(list)) {
-            merged.push(...list); //Spread operator 
+// 2. Validation & Try-Catch #2
+function mergeTasks(listA, listB) {
+    try {
+        // Ensure both parameters are actually arrays
+        if (!Array.isArray(listA) || !Array.isArray(listB)) {
+            throw new Error("Both arguments must be arrays in order to merge.");
         }
+        return [...listA, ...listB];
+    } catch (error) {
+        console.error("Merge Error:", error.message);
+        return [];
     }
-    return merged;
 }
 
 // Recursive function with error
@@ -129,16 +142,19 @@ function countCompletedTasks(tasks, index=0) {
 }
 
 // Function with Math object issues
-function calculateAveragePriority(tasksArray) {
-    //Added missing conditional check to prevent division by zero
-    if (!Array.isArray(tasksArray) || tasksArray.length === 0) {
+// Validation (Handling Edge Cases)
+function calculateAveragePriority(tasks) {
+    // Edge case: check for undefined or non-arrays
+    if (!Array.isArray(tasks)) {
+        console.error("Validation Error: calculateAveragePriority requires an array.");
         return 0;
     }
-    // Used functional .reduce() instead of a loop
-    const total = tasksArray.reduce((sum, task) => sum + task.priority, 0);
     
-    // Fix: Use Math.round to limit to 1 decimal place
-    return Math.round((total / tasksArray.length) * 10) / 10;
+    // Edge case: Handling empty arrays to prevent dividing by zero (NaN)
+    if (tasks.length === 0) return 0; 
+    
+    const total = tasks.reduce((sum, task) => sum + task.priority, 0);
+    return Number((total / tasks.length).toFixed(1));
 }
 
 // Filter function with errors
