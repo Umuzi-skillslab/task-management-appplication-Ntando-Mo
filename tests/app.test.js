@@ -55,7 +55,13 @@ describe('Task Functions', () => {
 
     test('updateTaskPriority should change priority', () => {
         addTask('Update Me', 'Testing update', 1);
-        updateTaskPriority('Update Me', 5);
+        
+        // Find the auto-generated ID of the task
+        const targetTask = taskList.find(task => task.title === 'Update Me');
+        
+        // Pass the ID (not the title) into the function
+        updateTaskPriority(targetTask.id, 5); 
+        
         expect(taskList[0].priority).toBe(5);
     });
 
