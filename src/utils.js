@@ -17,7 +17,7 @@ function loadFromStorage() {
 
 // Bug: Incorrect Math object usage
 function generateRandomId() {
-    return Math.random();  // Bug: Returns decimal, not integer
+    return Math.floor(Math.random() * 1000000);  // Bug: Returns decimal, not integer
 }
 
 // Bug: Poor string manipulation

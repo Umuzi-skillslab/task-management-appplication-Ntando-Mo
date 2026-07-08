@@ -7,6 +7,7 @@ let taskCounter = 0;  // Should use let or const
 // Task class with errors
 class Task {
     constructor(title, description, priority) {
+        this.id = generateRandomId();
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -15,6 +16,9 @@ class Task {
     }
     
     // Missing: method to toggle completion
+    toggleCompletion() {
+        this.completed = !this.completed;
+    }
     
     getInfo() {
         // Wrong string concatenation - should use template literals
@@ -26,7 +30,13 @@ class Task {
 class SubTask extends Task {
     constructor(title, description, priority, parentTask) {
         // Missing: super() call
+        super(title, description, priority);
         this.parentTask = parentTask;
+    }
+
+    //Overriding getInfo method with errors
+    getInfo() {
+        return "SubTask: " + this.title + " (Parent: " + this.parentTask + ") - Priority: " + this.priority;
     }
 }
 
