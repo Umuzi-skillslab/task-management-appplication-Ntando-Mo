@@ -77,12 +77,12 @@ function updateTaskPriority(taskId, newPriority) {
     // Missing: typeof check for parameters
     // Missing: null/undefined validation
     // Handle null/undefined values
-    if (taskId == null || newPriority == null) {
+    if (typeof taskId !== 'number' || typeof newPriority !== 'number') {
         return false;
     }
 
     for (let i = 0; i < taskList.length; i++) {
-        if (taskList[i].id === taskId) {  // Wrong operator (= instead of ===)
+        if (taskList[i].id === taskId) { 
             taskList[i].priority = newPriority;
             return true;
         }
