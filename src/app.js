@@ -2,7 +2,7 @@
 import { generateRandomId } from './utils.js';
 
 // Global variables (scoping issues)
-const taskList = [];  // Missing var/let/const
+const taskList = [];  //Fixed with const
 let taskCounter = 0;  // Should use let or const
 
 // Task class with errors
