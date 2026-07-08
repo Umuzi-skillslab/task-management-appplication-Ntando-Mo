@@ -1,7 +1,7 @@
 // Utilities - Starter Code (WITH ERRORS AND MISSING FEATURES)
 
 // Bug: Not using proper data structures
-var priorities = ["low", "medium", "high"];
+const priorities = ["low", "medium", "high"];
 
 // Bug: Missing JSON operations
 function saveToStorage(data) {
@@ -11,7 +11,7 @@ function saveToStorage(data) {
 
 function loadFromStorage() {
     // Bug: Not parsing JSON
-    var data = localStorage.getItem("tasks");
+    const data = localStorage.getItem("tasks");
     return data;
 }
 
@@ -23,16 +23,22 @@ function generateRandomId() {
 // Bug: Poor string manipulation
 function formatTaskName(name) {
     // Bug: Not using string methods properly
-    var result = name;
+    const result = name;
     return result;  // Should capitalize, trim, etc.
 }
 
 // Bug: Incorrect boolean logic
 function isHighPriority(task) {
-    if (task.priority == "high") {  // Bug: Using ==
-        return "yes";  // Bug: Should return boolean
+
+    // Add safety check for undefined
+    if (!task || typeof task.priority === 'undefined') {
+        return false;
     }
-    return "no";
+
+    if (task.priority === "high") {  // Bug: Using ==
+        return true;  // Bug: Should return boolean
+    }
+    return false;
 }
 
 // Missing: Class definitions

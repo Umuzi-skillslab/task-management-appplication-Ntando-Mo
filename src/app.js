@@ -1,8 +1,8 @@
 // Task Management Application - Starter Code with Errors
 
 // Global variables (scoping issues)
-taskList = [];  // Missing var/let/const
-var taskCounter = 0;  // Should use let or const
+const taskList = [];  // Missing var/let/const
+let taskCounter = 0;  // Should use let or const
 
 // Task class with errors
 class Task {
@@ -34,7 +34,12 @@ class SubTask extends Task {
 
 // Function with no error handling
 function addTask(title, description, priority) {
-    var newTask = new Task(title, description, priority);  // Should use const
+    if (typeof title !== 'string' || typeof description !== 'string' || typeof priority !== 'number') {
+        console.error("Invalid parameter types provided to addTask");
+        return null;
+    }
+    
+    const newTask = new Task(title, description, priority); // Replaced var with const
     taskList.push(newTask);
     taskCounter++;
     return newTask;
@@ -43,7 +48,7 @@ function addTask(title, description, priority) {
 // Function with incorrect loop
 function displayAllTasks() {
     // Wrong loop - should use for-of
-    for (var i = 0; i <= taskList.length; i++) {  // Off-by-one error
+    for (let i = 0; i <= taskList.length; i++) {  // Off-by-one error
         console.log(taskList[i].title);
     }
 }
@@ -52,7 +57,7 @@ function displayAllTasks() {
 function findTaskByTitle() {
     // Missing: title parameter
     // Wrong loop construct
-    var i = 0;
+    let i = 0;
     while (i < taskList.length) {
         if (taskList[i].title == title) {  // Should use ===
             return taskList[i];
@@ -66,9 +71,13 @@ function findTaskByTitle() {
 function updateTaskPriority(taskId, newPriority) {
     // Missing: typeof check for parameters
     // Missing: null/undefined validation
-    
-    for (var i = 0; i < taskList.length; i++) {
-        if (taskList[i].id = taskId) {  // Wrong operator (= instead of ===)
+    // Handle null/undefined values
+    if (taskId == null || newPriority == null) {
+        return false;
+    }
+
+    for (let i = 0; i < taskList.length; i++) {
+        if (taskList[i].id === taskId) {  // Wrong operator (= instead of ===)
             taskList[i].priority = newPriority;
             return true;
         }
@@ -79,10 +88,10 @@ function updateTaskPriority(taskId, newPriority) {
 // Function that should use destructuring but doesn't
 function getTaskDetails(task) {
     // Should destructure task properties
-    var title = task.title;
-    var description = task.description;
-    var priority = task.priority;
-    var completed = task.completed;
+    const title = task.title;
+    const description = task.description;
+    const priority = task.priority;
+    const completed = task.completed;
     
     return {
         title: title,
@@ -95,11 +104,11 @@ function getTaskDetails(task) {
 // Function missing spread/rest operators
 function mergeTasks(list1, list2) {
     // Should use spread operator
-    var merged = [];
-    for (var i = 0; i < list1.length; i++) {
+    const merged = [];
+    for (let i = 0; i < list1.length; i++) {
         merged.push(list1[i]);
     }
-    for (var i = 0; i < list2.length; i++) {
+    for (let i = 0; i < list2.length; i++) {
         merged.push(list2[i]);
     }
     return merged;
@@ -119,9 +128,9 @@ function countCompletedTasks(tasks, index) {
 
 // Function with Math object issues
 function calculateAveragePriority() {
-    var total = 0;
+    let total = 0;
     // Missing: check for empty array
-    for (var i = 0; i < taskList.length; i++) {
+    for (let i = 0; i < taskList.length; i++) {
         total = total + taskList[i].priority;
     }
     // Should use Math.round or toFixed
@@ -130,9 +139,9 @@ function calculateAveragePriority() {
 
 // Filter function with errors
 function getHighPriorityTasks(minPriority) {
-    var highPriority = [];
+    const highPriority = [];
     // Should use array methods (filter)
-    for (var i = 0; i < taskList.length; i++) {
+    for (let i = 0; i < taskList.length; i++) {
         if (taskList[i].priority > minPriority) {
             highPriority.push(taskList[i]);
         }
@@ -141,7 +150,7 @@ function getHighPriorityTasks(minPriority) {
 }
 
 // Object with missing methods
-var TaskManager = {
+const TaskManager = {
     tasks: taskList,
     
     // Missing: method to add task using functional approach
