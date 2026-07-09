@@ -14,27 +14,37 @@
         <h2>Add New Task</h2>
         <input type="text" id="title" placeholder="Task Title" />
         <input type="text" id="description" placeholder="Description" />
-        <input
-          type="number"
-          id="priority"
-          placeholder="Priority (e.g., 1-5)"
-          min="1"
-          max="5"
-        />
+        <select id="priority" required>
+            <option value="" disabled selected>Priority</option>
+            <option value="5">High (5)</option>
+            <option value="4">High (4)</option>
+            <option value="3">Medium (3)</option>
+            <option value="2">Low (2)</option>
+            <option value="1">Low (1)</option>
+        </select>
         <button class="add-task-btn">Add Task</button>
+      </div>
+
+      <div class="controls-section">
+        <input type="text" id="search-input" placeholder="Search tasks..." />
+        <div class="filter-sort-group">
+            <button class="filter-btn" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+            <button id="sort-priority-btn">Sort High to Low</button>
+        </div>
       </div>
 
       <div class="task-list" id="task-list">
         <!-- Tasks will be displayed here -->
       </div>
 
-      <div class="statistics">
-        <!-- Missing: statistics display -->
+      <div class="statistics" id="statistics-panel">
+        <!-- Stats will generate here -->
       </div>
     </div>
 
     <!--Scripts loaded correctly using ES6 modules -->
     <script type="module" src="src/dom.js"></script>
-    <!-- Missing: module script -->
   </body>
 </html>
