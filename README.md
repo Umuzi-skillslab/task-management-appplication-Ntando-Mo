@@ -1,60 +1,53 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=24113330&assignment_repo_type=AssignmentRepo)
-# Task Manager - JavaScript Starter Code
+# Task Management Application - Debugging & Refactoring
 
-This is the starter codebase for your JavaScript task management application. The code is approximately 70% complete but contains errors, omissions, and areas that need significant improvement.
+## Overview
 
-## What's Included
+This project is a modern, modular Task Management Application built for a local startup. The original codebase was delivered incomplete and contained numerous intentional errors, scoping issues, and poor programming practices. My objective was to debug the application, implement modern ES6+ features, enforce functional programming principles, and build a comprehensive automated test suite.
 
-- `app.js` - Core application logic (incomplete with errors)
-- `dom.js` - DOM manipulation code (incomplete with errors)
-- `index.html` - HTML structure (incomplete)
-- `app.test.js` - Jest tests (incomplete)
-- `package.json` - Project configuration
+## Major Errors Identified
 
-## Errors and Omissions
+During the initial audit, I identified the following major issues across the codebase:
 
-The starter code contains intentional errors and missing features across all JavaScript topics including:
+**Variables & Operators**
 
-- Variable scoping issues (var vs let vs const)
-- Missing error handling (try-catch blocks)
-- Incorrect operators and comparisons
-- Loop errors (for, while, for-of)
-- Missing array and object destructuring
-- No spread/rest operators
-- Missing template literals
-- Class and inheritance issues
-- Missing functional programming approaches
-- DOM selector errors
-- Event handling problems
-- Missing JSON operations
-- Incomplete Jest tests
-- Missing module exports/imports
+1. Widespread use of `var`, causing global scope pollution.
+2. Undeclared variables bypassing strict mode.
+3. Assignment operators (`=`) incorrectly used inside conditional statements.
+4. Non-strict equality (`==`) used instead of strict equality (`===`).
+5. Missing `typeof` checks leading to unhandled data types.
+6. Missing variable initialization causing `undefined` reference errors.
 
-## Your Task
+**Control Flow & Functions** 7. Off-by-one errors in standard `for` loops. 8. Infinite `while` loops caused by missing incrementers. 9. Recursive functions missing proper base cases (risking stack overflows). 10. Functions missing required arguments in their signatures. 11. Impure functions mutating global arrays directly. 12. Redundant conditional blocks easily simplified by ternary operators. 13. Implicit globals created by missing variable declarations inside functions.
 
-1. Review all code files carefully
-2. Identify and fix all errors
-3. Complete all missing requirements
-4. Add proper error handling
-5. Implement modern JavaScript features
-6. Write comprehensive tests
-7. Ensure code follows best practices
+**Object-Oriented Programming (OOP)** 14. `Task` class missing the core `id` property in its constructor. 15. `SubTask` inheritance failing due to a missing `super()` call. 16. `Task` class missing the required `toggleCompletion` method. 17. Incorrect `this` context handling inside object methods. 18. Hardcoded object properties instead of dynamic parameter assignment.
 
-## Getting Started
+**DOM, Storage & Error Handling** 19. Outdated string concatenation used for HTML rendering. 20. Event listeners missing `.preventDefault()` on form submissions. 21. Missing null-checks before DOM manipulation, causing runtime crashes. 22. LocalStorage saving raw objects instead of using `JSON.stringify()`. 23. Complete lack of `try-catch` blocks for critical logic failure points. 24. Missing module export statements preventing cross-file integration. 25. Direct DOM manipulation ignoring Event Delegation best practices.
 
-1. Install dependencies: `npm install`
-2. Review all JavaScript files
-3. Run tests: `npm test` (they will fail initially)
-4. Fix errors and complete missing features
-5. Re-run tests until all pass
+## Fixes & Modern ES6+ Features
 
-## Testing
+- **Scoping & Logic:** Replaced `var` with `let` and `const`. Replaced imperative loops with functional higher-order methods like `.filter()` and `.reduce()`.
+- **OOP & Modules:** Restructured `Task` classes for proper inheritance. Split the monolithic file into modular `import`/`export` files.
+- **Modern Syntax:** Replaced string concatenation with Template Literals. Applied Object Destructuring to safely extract properties. Utilized Spread syntax (`...array`) for safe array merging and Rest parameters (`...tasks`) for handling dynamic function arguments.
+- **Storage & Safety:** Implemented strict null checks, Event Delegation for dynamic UI elements, and data rehydration via `localStorage`.
 
-Run Jest tests with:
-```
-npm test
-```
+## Instructions: Running the Application
 
-Initially, tests will fail or be incomplete. Fix the code and add missing tests.
+The core application runs natively in the browser and does not require Node.js to operate.
 
-Good luck!
+1. Clone the repository: `git clone https://github.com/Umuzi-skillslab/task-management-appplication-Ntando-Mo.git`
+2. Navigate into the project directory: `cd task-management-appplication-Ntando-Mo`
+3. Open `index.html` using a Live Server extension in your browser.
+
+## Instructions: Running the Tests
+
+This project uses Jest for automated testing, which requires a Node environment.
+
+1. Open your terminal inside the root directory.
+2. Install dependencies: `npm install --legacy-peer-deps`
+3. Execute the test suite: `npm test`
+
+**Test Results:** The suite includes 19 comprehensive tests covering core logic, OOP inheritance, edge cases, and error handling. **19/19 tests are currently passing with 0 failures.**
+
+## Reflection
+
+The most challenging part of this capstone was tracking down silent logic bugs that didn't immediately throw console errors. For example, testing the `updateTaskPriority` function revealed a bug where a numerical task ID was strictly compared (`===`) to a string, causing the update to silently fail. Debugging this required writing targeted Jest edge-case tests and implementing strict `typeof` validations to ensure data integrity.
