@@ -1,9 +1,9 @@
 // Task Management Application - Starter Code with Errors
 import { generateRandomId } from "./utils.js";
 
-// Global variables (scoping issues)
-const taskList = []; //Fixed with const
-let taskCounter = 0; // Should use let or const
+// Global variables (scoping issues fixed)
+const taskList = [];
+let taskCounter = 0;
 
 // Defines the blueprint for standard tasks. Includes an automatic ID generator and defaults completion status to false.
 class Task {
@@ -13,16 +13,15 @@ class Task {
     this.description = description;
     this.priority = priority;
     this.completed = false;
-    // Missing: id property
   }
 
-  // method to toggle completion
+  // Method to toggle completion
   toggleCompletion() {
     this.completed = !this.completed;
   }
 
   getInfo() {
-    // Wrong string concatenation - should use template literals -- Fixed
+    // String concatenation replaced with template literals
     return `Task: ${this.title} - Priority: ${this.priority}`;
   }
 }
@@ -30,18 +29,16 @@ class Task {
 // Demonstrates OOP inheritance. Calls super() to inherit core Task properties while adding a unique parentTask property.
 class SubTask extends Task {
   constructor(title, description, priority, parentTask) {
-    // Missing: super() call
     super(title, description, priority);
     this.parentTask = parentTask;
   }
 
-  //Overriding getInfo method with errors
+  // Overriding getInfo method
   getInfo() {
     return `SubTask: ${this.title} (Parent: ${this.parentTask}) - Priority: ${this.priority}`;
   }
 }
 
-//Validation & Try-Catch
 // Implements a try-catch block to handle task creation. Validates that the title is a non-empty string before instantiating the Task object.
 function addTask(title, description, priority) {
   try {
@@ -54,21 +51,18 @@ function addTask(title, description, priority) {
     taskList.push(newTask);
     return newTask;
   } catch (error) {
-    //error message
     console.error("Failed to add task:", error.message);
     return null;
   }
 }
 
-// Function with incorrect loop
+// Function with correct loop (for-of)
 function displayAllTasks() {
-  // Wrong loop - should use for-of
   for (const task of taskList) {
     console.log(task.title);
   }
 }
 
-// Function missing parameter
 // Safely queries the array using the .find() method. Includes strict type checking to prevent errors from invalid search inputs.
 function findTaskByTitle(title) {
   // Edge case: null or non-string inputs
@@ -82,7 +76,6 @@ function findTaskByTitle(title) {
 // Validates inputs to ensure strict typing. Iterates through the global task list to update priority and exits early upon success.
 function updateTaskPriority(taskId, newPriority) {
   if (typeof taskId !== "number" || typeof newPriority !== "number") {
-    // Meaningful error message for invalid data types
     console.error(
       "Validation Error: taskId and newPriority must be valid numbers.",
     );
@@ -98,7 +91,17 @@ function updateTaskPriority(taskId, newPriority) {
   return false;
 }
 
-// Validation & Try-Catch
+// Removes a task from the global array based on its unique ID safely
+function deleteTask(taskId) {
+  if (typeof taskId !== "number") return false;
+  const index = taskList.findIndex((task) => task.id === taskId);
+  if (index !== -1) {
+    taskList.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
 // Utilizes object destructuring to safely extract specific properties, preventing accidental mutation of the entire task object.
 function getTaskDetails(task) {
   try {
@@ -130,7 +133,7 @@ function mergeTasks(listA, listB) {
 
 // Recursive function that navigates through a nested list of tasks. The base case ensures the recursion stops when the array is empty.
 function countCompletedTasks(tasks, index = 0) {
-  // Missing: base case check
+  // Base case check
   if (!Array.isArray(tasks) || index >= tasks.length) {
     return 0;
   }
@@ -161,12 +164,11 @@ function calculateAveragePriority(tasks) {
 // Utilizes the higher-order .filter() method to return a new array containing only tasks that meet or exceed the specified threshold.
 function getHighPriorityTasks(minPriority) {
   if (typeof minPriority !== "number") return [];
-
-  //Replaced imperative loop with functional .filter()
+  // Replaced imperative loop with functional .filter()
   return taskList.filter((task) => task.priority > minPriority);
 }
 
-// Object with missing methods
+// Object demonstrating array methods and higher-order functions
 const TaskManager = {
   tasks: taskList,
 
@@ -185,7 +187,7 @@ const TaskManager = {
     return this.tasks.every((task) => task.completed);
   },
 
-  //  Higher-order function demonstration (takes a function as a parameter)
+  // Higher-order function demonstration (takes a function as a parameter)
   executeOnTasks: function (callbackFunction) {
     if (typeof callbackFunction !== "function") return;
     this.tasks.forEach(callbackFunction);
@@ -194,11 +196,11 @@ const TaskManager = {
 
 // Utilizes a rest parameter to handle an indefinite number of arguments safely
 function logMultipleTasks(...tasks) {
-    if (tasks.length === 0) {
-        console.log("No tasks provided.");
-        return;
-    }
-    tasks.forEach(task => console.log(`Task to process: ${task}`));
+  if (tasks.length === 0) {
+    console.log("No tasks provided.");
+    return;
+  }
+  tasks.forEach((task) => console.log(`Task to process: ${task}`));
 }
 
 // Exports
@@ -210,10 +212,12 @@ export {
   displayAllTasks,
   findTaskByTitle,
   updateTaskPriority,
+  deleteTask,
   getTaskDetails,
   mergeTasks,
   countCompletedTasks,
   calculateAveragePriority,
   getHighPriorityTasks,
   TaskManager,
+  logMultipleTasks,
 };
