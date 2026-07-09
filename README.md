@@ -17,11 +17,33 @@ During the initial audit, I identified the following major issues across the cod
 5. Missing `typeof` checks leading to unhandled data types.
 6. Missing variable initialization causing `undefined` reference errors.
 
-**Control Flow & Functions** 7. Off-by-one errors in standard `for` loops. 8. Infinite `while` loops caused by missing incrementers. 9. Recursive functions missing proper base cases (risking stack overflows). 10. Functions missing required arguments in their signatures. 11. Impure functions mutating global arrays directly. 12. Redundant conditional blocks easily simplified by ternary operators. 13. Implicit globals created by missing variable declarations inside functions.
+**Control Flow & Functions**
 
-**Object-Oriented Programming (OOP)** 14. `Task` class missing the core `id` property in its constructor. 15. `SubTask` inheritance failing due to a missing `super()` call. 16. `Task` class missing the required `toggleCompletion` method. 17. Incorrect `this` context handling inside object methods. 18. Hardcoded object properties instead of dynamic parameter assignment.
+7. Off-by-one errors in standard `for` loops.
+8. Infinite `while` loops caused by missing incrementers.
+9. Recursive functions missing proper base cases (risking stack overflows).
+10. Functions missing required arguments in their signatures.
+11. Impure functions mutating global arrays directly.
+12. Redundant conditional blocks easily simplified by ternary operators.
+13. Implicit globals created by missing variable declarations inside functions.
 
-**DOM, Storage & Error Handling** 19. Outdated string concatenation used for HTML rendering. 20. Event listeners missing `.preventDefault()` on form submissions. 21. Missing null-checks before DOM manipulation, causing runtime crashes. 22. LocalStorage saving raw objects instead of using `JSON.stringify()`. 23. Complete lack of `try-catch` blocks for critical logic failure points. 24. Missing module export statements preventing cross-file integration. 25. Direct DOM manipulation ignoring Event Delegation best practices.
+**Object-Oriented Programming (OOP)**
+
+14. `Task` class missing the core `id` property in its constructor.
+15. `SubTask` inheritance failing due to a missing `super()` call.
+16. `Task` class missing the required `toggleCompletion` method.
+17. Incorrect `this` context handling inside object methods.
+18. Hardcoded object properties instead of dynamic parameter assignment.
+
+**DOM, Storage & Error Handling**
+
+19. Outdated string concatenation used for HTML rendering.
+20. Event listeners missing `.preventDefault()` on form submissions.
+21. Missing null-checks before DOM manipulation, causing runtime crashes.
+22. LocalStorage saving raw objects instead of using `JSON.stringify()`.
+23. Complete lack of `try-catch` blocks for critical logic failure points.
+24. Missing module export statements preventing cross-file integration.
+25. Direct DOM manipulation ignoring Event Delegation best practices.
 
 ## Fixes & Modern ES6+ Features
 
