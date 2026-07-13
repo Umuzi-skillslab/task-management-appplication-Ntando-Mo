@@ -40,7 +40,7 @@ describe("Task Class", () => {
 });
 
 describe("Task Functions", () => {
-  // Fix: Added beforeEach to reset taskList
+  //Added beforeEach to reset taskList
   beforeEach(() => {
     taskList.length = 0;
   });
