@@ -1,75 +1,100 @@
-# Task Management Application - Debugging & Refactoring
+# Task Management Application – Debugging & Refactoring
 
 ## Overview
 
-This project is a modern, modular Task Management Application built for a local startup. The original codebase was delivered incomplete and contained numerous intentional errors, scoping issues, and poor programming practices. My objective was to debug the application, implement modern ES6+ features, enforce functional programming principles, and build a comprehensive automated test suite.
+This project involved debugging and improving an existing Task Management Application that contained several intentional errors and incomplete features. The goal was to identify the problems, fix them using modern JavaScript (ES6+), and build a working application with automated tests.
 
-## Major Errors Identified
+## Errors Found
 
-During the initial audit, I identified the following major issues across the codebase:
+### Variables & Operators
+1. Used `var` instead of `let` and `const`.
+2. Variables were used without being declared.
+3. Assignment (`=`) was used instead of a comparison operator.
+4. Loose equality (`==`) was used instead of strict equality (`===`).
+5. Missing `typeof` checks for input validation.
+6. Variables were not initialized correctly, causing `undefined` values.
 
-**Variables & Operators**
+### Control Flow
+7. A `for` loop contained an off-by-one error.
+8. A `while` loop could run forever because it was missing an increment.
+9. Some conditional statements were incomplete or could be simplified.
+10. Some loops could be replaced with cleaner `for...of` loops.
 
-1. Widespread use of `var`, causing global scope pollution.
-2. Undeclared variables bypassing strict mode.
-3. Assignment operators (`=`) incorrectly used inside conditional statements.
-4. Non-strict equality (`==`) used instead of strict equality (`===`).
-5. Missing `typeof` checks leading to unhandled data types.
-6. Missing variable initialization causing `undefined` reference errors.
+### Functions & Functional Programming
+11. Some functions were missing required parameters.
+12. A recursive function had no proper base case.
+13. Some functions were not pure and modified data directly.
+14. Imperative loops were used where array methods such as `filter()`, `find()`, and `reduce()` were more suitable.
 
-**Control Flow & Functions**
+### Object-Oriented Programming
+15. The `Task` class was missing an `id` property.
+16. The `Task` class did not include a `toggleCompletion()` method.
+17. The `SubTask` class was missing the required `super()` call.
+18. Some object methods used `this` incorrectly.
 
-7. Off-by-one errors in standard `for` loops.
-8. Infinite `while` loops caused by missing incrementers.
-9. Recursive functions missing proper base cases (risking stack overflows).
-10. Functions missing required arguments in their signatures.
-11. Impure functions mutating global arrays directly.
-12. Redundant conditional blocks easily simplified by ternary operators.
-13. Implicit globals created by missing variable declarations inside functions.
+### Modern JavaScript (ES6+)
+19. String concatenation was used instead of template literals.
+20. Object and array destructuring were missing.
+21. Spread and rest operators were not implemented.
+22. The project was not fully organized using ES6 modules (`import`/`export`).
 
-**Object-Oriented Programming (OOP)**
+### DOM Manipulation & Storage
+23. DOM elements were accessed without checking for `null`.
+24. Event delegation was not used for dynamically created elements.
+25. `localStorage` data was not correctly handled using `JSON.stringify()` and `JSON.parse()`.
 
-14. `Task` class missing the core `id` property in its constructor.
-15. `SubTask` inheritance failing due to a missing `super()` call.
-16. `Task` class missing the required `toggleCompletion` method.
-17. Incorrect `this` context handling inside object methods.
-18. Hardcoded object properties instead of dynamic parameter assignment.
+## Fixes Implemented
 
-**DOM, Storage & Error Handling**
+To improve the application, I:
 
-19. Outdated string concatenation used for HTML rendering.
-20. Event listeners missing `.preventDefault()` on form submissions.
-21. Missing null-checks before DOM manipulation, causing runtime crashes.
-22. LocalStorage saving raw objects instead of using `JSON.stringify()`.
-23. Complete lack of `try-catch` blocks for critical logic failure points.
-24. Missing module export statements preventing cross-file integration.
-25. Direct DOM manipulation ignoring Event Delegation best practices.
+- Replaced `var` with `let` and `const`.
+- Fixed loops, recursion, and conditional logic.
+- Added input validation and `try...catch` blocks.
+- Corrected the `Task` and `SubTask` classes and inheritance.
+- Implemented ES6 modules using `import` and `export`.
+- Used template literals, object destructuring, the spread operator, and rest parameters.
+- Added event delegation and null checks before manipulating the DOM.
+- Implemented `localStorage` to save and load tasks.
+- Added Jest tests to verify the application's functionality.
 
-## Fixes & Modern ES6+ Features
+## Features Added
 
-- **Scoping & Logic:** Replaced `var` with `let` and `const`. Replaced imperative loops with functional higher-order methods like `.filter()` and `.reduce()`.
-- **OOP & Modules:** Restructured `Task` classes for proper inheritance. Split the monolithic file into modular `import`/`export` files.
-- **Modern Syntax:** Replaced string concatenation with Template Literals. Applied Object Destructuring to safely extract properties. Utilized Spread syntax (`...array`) for safe array merging and Rest parameters (`...tasks`) for handling dynamic function arguments.
-- **Storage & Safety:** Implemented strict null checks, Event Delegation for dynamic UI elements, and data rehydration via `localStorage`.
+- ES6 Modules
+- Classes and Inheritance
+- Template Literals
+- Object & Array Destructuring
+- Spread and Rest Operators
+- Higher-order Array Methods
+- Event Delegation
+- Local Storage Persistence
+- Automated Jest Testing
 
-## Instructions: Running the Application
+## Running the Application
 
-The core application runs natively in the browser and does not require Node.js to operate.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Umuzi-skillslab/task-management-appplication-Ntando-Mo.git
+   ```
+2. Open the project folder.
+3. Run `index.html` using the Live Server extension.
 
-1. Clone the repository: `git clone https://github.com/Umuzi-skillslab/task-management-appplication-Ntando-Mo.git`
-2. Navigate into the project directory: `cd task-management-appplication-Ntando-Mo`
-3. Open `index.html` using a Live Server extension in your browser.
+## Running the Tests
 
-## Instructions: Running the Tests
+1. Open a terminal in the project folder.
+2. Install the dependencies:
 
-This project uses Jest for automated testing, which requires a Node environment.
+   ```bash
+   npm install --legacy-peer-deps
+   ```
 
-1. Open your terminal inside the root directory.
-2. Install dependencies: `npm install --legacy-peer-deps`
-3. Execute the test suite: `npm test`
+3. Run the tests:
 
-**Test Results:** The suite includes 19 comprehensive tests covering core logic, OOP inheritance, edge cases, and error handling. **19/19 tests are currently passing with 0 failures.**
+   ```bash
+   npm test
+   ```
+
+All tests are currently passing successfully.
 
 ## Reflection
 
-The most challenging part of this capstone was tracking down silent logic bugs that didn't immediately throw console errors. For example, testing the `updateTaskPriority` function revealed a bug where a numerical task ID was strictly compared (`===`) to a string, causing the update to silently fail. Debugging this required writing targeted Jest edge-case tests and implementing strict `typeof` validations to ensure data integrity.
+This project helped me improve my debugging skills and my understanding of modern JavaScript. The biggest challenge was finding logic errors that didn't always produce obvious errors but still caused incorrect behaviour. Writing Jest tests made it much easier to identify these problems and confirm that my fixes were working correctly. I also became more confident using ES6 features such as modules, classes, destructuring, template literals, higher-order array methods, and local storage. Overall, this project gave me a much better understanding of how to build and organize a modular JavaScript application.
