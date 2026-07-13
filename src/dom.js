@@ -1,175 +1,197 @@
-import { taskList, addTask, Task, calculateAveragePriority, countCompletedTasks, getHighPriorityTasks } from "./app.js";
+import {
+  taskList,
+  addTask,
+  Task,
+  calculateAveragePriority,
+  countCompletedTasks,
+  getHighPriorityTasks,
+} from "./app.js";
 import { saveToStorage, loadFromStorage } from "./utils.js";
 
-// Keep track of active filters and search terms globally
+// Store the current search and filter values
 let currentFilter = "all";
 let searchQuery = "";
 
-// Wait for the HTML to fully load before running scripts to prevent null errors
+// Wait for the page to load before running the JavaScript
 document.addEventListener("DOMContentLoaded", setupEventListeners);
 
 function setupEventListeners() {
-    // Load any existing tasks from local storage when the page refreshes
-    const savedTasks = loadFromStorage();
-    
-    if (savedTasks && savedTasks.length > 0) {
-        savedTasks.forEach(taskData => {
-            // We need to recreate the Task objects so their methods (like toggleCompletion) still work
-            const restoredTask = new Task(taskData.title, taskData.description, taskData.priority);
-            restoredTask.id = taskData.id; 
-            restoredTask.completed = taskData.completed; 
-            taskList.push(restoredTask);
-        });
-        displayTasks();
-    }
+  // Load any saved tasks from local storage
+  const savedTasks = loadFromStorage();
 
-    // Grab all the HTML elements we need to interact with
-    const addButton = document.querySelector(".add-task-btn");
-    const taskListContainer = document.getElementById("task-list");
-    const priorityInput = document.getElementById("priority");
-    const titleInput = document.getElementById("title");
-    const searchInput = document.getElementById("search-input");
-    const sortBtn = document.getElementById("sort-priority-btn");
-    const filterBtns = document.querySelectorAll(".filter-btn");
-
-    // Only add the click listener if the button actually exists on the page
-    if (addButton) {
-        addButton.addEventListener("click", handleAddTask);
-    }
-
-    // Setup event delegation on the main container instead of attaching listeners to every single task
-    if (taskListContainer) {
-        taskListContainer.addEventListener("click", handleTaskClick);
-    }
-
-    // Allow users to press Enter to submit the form if they are typing in an input box
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && (document.activeElement.id === "title" || document.activeElement.id === "description" || document.activeElement.id === "priority")) {
-            handleAddTask(e);
-        }
+  if (savedTasks && savedTasks.length > 0) {
+    savedTasks.forEach((taskData) => {
+      // Recreate the Task objects so their methods still work
+      const restoredTask = new Task(
+        taskData.title,
+        taskData.description,
+        taskData.priority,
+      );
+      restoredTask.id = taskData.id;
+      restoredTask.completed = taskData.completed;
+      taskList.push(restoredTask);
     });
+    displayTasks();
+  }
 
-    // Give visual feedback when the user is focused on the title input
-    if (titleInput) {
-        titleInput.addEventListener("focus", () => (titleInput.style.outline = "2px solid #4CAF50"));
-        titleInput.addEventListener("blur", () => (titleInput.style.outline = "")); 
+  // Get the HTML elements we'll use
+  const addButton = document.querySelector(".add-task-btn");
+  const taskListContainer = document.getElementById("task-list");
+  const priorityInput = document.getElementById("priority");
+  const titleInput = document.getElementById("title");
+  const searchInput = document.getElementById("search-input");
+  const sortBtn = document.getElementById("sort-priority-btn");
+  const filterBtns = document.querySelectorAll(".filter-btn");
+
+  // Check the button exists before adding the event listener
+  if (addButton) {
+    addButton.addEventListener("click", handleAddTask);
+  }
+
+  // Use event delegation to handle clicks on the task buttons
+  if (taskListContainer) {
+    taskListContainer.addEventListener("click", handleTaskClick);
+  }
+
+  // Allow Enter to add a task
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "Enter" &&
+      (document.activeElement.id === "title" ||
+        document.activeElement.id === "description" ||
+        document.activeElement.id === "priority")
+    ) {
+      handleAddTask(e);
     }
+  });
 
-    // Update the search query and re-render the list every time the user types a letter
-    if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
-            searchQuery = e.target.value;
-            displayTasks();
-        });
-    }
+  // Highlight the title input when it's selected
+  if (titleInput) {
+    titleInput.addEventListener(
+      "focus",
+      () => (titleInput.style.outline = "2px solid #4CAF50"),
+    );
+    titleInput.addEventListener("blur", () => (titleInput.style.outline = ""));
+  }
 
-    // Handle the filter buttons (All, Active, Completed)
-    filterBtns.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            currentFilter = e.target.dataset.filter;
-            displayTasks();
-        });
+  // Update the task list while the user types
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      displayTasks();
     });
+  }
 
-    // Sort the global array by priority (highest first) and save the new order
-    if (sortBtn) {
-        sortBtn.addEventListener("click", () => {
-            taskList.sort((a, b) => b.priority - a.priority);
-            saveToStorage(taskList);
-            displayTasks();
-        });
-    }
+  // Filter tasks based on the selected button
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      currentFilter = e.target.dataset.filter;
+      displayTasks();
+    });
+  });
+
+  // Sort tasks from highest to lowest priority
+  if (sortBtn) {
+    sortBtn.addEventListener("click", () => {
+      taskList.sort((a, b) => b.priority - a.priority);
+      saveToStorage(taskList);
+      displayTasks();
+    });
+  }
 }
 
 function handleAddTask(event) {
-    // Stop the form from refreshing the page
-    if (event) event.preventDefault();
+  // Prevent the page from refreshing
+  if (event) event.preventDefault();
 
-    const titleInput = document.getElementById("title");
-    const descInput = document.getElementById("description");
-    const priorityInput = document.getElementById("priority");
+  const titleInput = document.getElementById("title");
+  const descInput = document.getElementById("description");
+  const priorityInput = document.getElementById("priority");
 
-    if (!titleInput || !descInput || !priorityInput) return;
+  if (!titleInput || !descInput || !priorityInput) return;
 
-    const title = titleInput.value.trim();
-    const description = descInput.value.trim();
-    const priority = parseInt(priorityInput.value);
+  const title = titleInput.value.trim();
+  const description = descInput.value.trim();
+  const priority = parseInt(priorityInput.value);
 
-    // Basic check to make sure the user didn't leave anything blank
-    if (!title || !description || isNaN(priority)) {
-        alert("Please fill in all fields completely.");
-        return;
-    }
+  // Make sure all fields have been filled in
+  if (!title || !description || isNaN(priority)) {
+    alert("Please fill in all fields completely.");
+    return;
+  }
 
-    // Make sure they didn't manually bypass the HTML and submit a crazy number
-    if (priority < 1 || priority > 5) {
-        alert("Priority must be between 1 and 5.");
-        return;
-    }
+  // Make sure the priority is between 1 and 5
+  if (priority < 1 || priority > 5) {
+    alert("Priority must be between 1 and 5.");
+    return;
+  }
 
-    addTask(title, description, priority);
-    saveToStorage(taskList);
-    displayTasks();
+  addTask(title, description, priority);
+  saveToStorage(taskList);
+  displayTasks();
 
-    // Clear the form fields so they can add another task easily
-    titleInput.value = "";
-    descInput.value = "";
-    priorityInput.value = "";
-    titleInput.focus();
+  // Clear the form after adding a task
+  titleInput.value = "";
+  descInput.value = "";
+  priorityInput.value = "";
+  titleInput.focus();
 }
 
 function displayTasks() {
-    const container = document.getElementById("task-list");
-    if (!container) return;
-    
-    // Clear out the old HTML before rendering the new list
-    container.innerHTML = "";
+  const container = document.getElementById("task-list");
+  if (!container) return;
 
-    // Filter the array based on the current search text (checking both title and description)
-    let displayList = taskList.filter(task => 
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  // Clear the task list before displaying it again
+  container.innerHTML = "";
 
-    // Apply the status filters based on the global variable
-    if (currentFilter === "active") displayList = displayList.filter(t => !t.completed);
-    if (currentFilter === "completed") displayList = displayList.filter(t => t.completed);
+  // Search by task title or description
+  let displayList = taskList.filter(
+    (task) =>
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
-    for (const task of displayList) {
-        const div = document.createElement("div");
-        div.className = "task-item";
-        div.dataset.id = task.id; 
+  // Apply the selected filter
+  if (currentFilter === "active")
+    displayList = displayList.filter((t) => !t.completed);
+  if (currentFilter === "completed")
+    displayList = displayList.filter((t) => t.completed);
 
-        const { title, description, priority, completed } = task;
+  for (const task of displayList) {
+    const div = document.createElement("div");
+    div.className = "task-item";
+    div.dataset.id = task.id;
 
-        // Use a switch statement to map numeric priorities to specific text and styling classes
-        let priorityClass;
-        let priorityText;
+    const { title, description, priority, completed } = task;
 
-        switch (priority) {
-            case 5:
-                priorityClass = "critical";
-                priorityText = "Critical 🔴";
-                break;
-            case 4:
-                priorityClass = "high";
-                priorityText = "High 🟠";
-                break;
-            case 3:
-                priorityClass = "medium";
-                priorityText = "Medium 🟡";
-                break;
-            case 2:
-                priorityClass = "low";
-                priorityText = "Low 🟢";
-                break;
-            default:
-                priorityClass = "very-low";
-                priorityText = "Very Low 🔵";
-        }
+    // Display the correct label and colour for each priority
+    let priorityClass;
+    let priorityText;
 
-        // Use template literals to safely inject the task data into the HTML structure
-        div.innerHTML = `
+    switch (priority) {
+      case 5:
+        priorityClass = "critical";
+        priorityText = "Critical 🔴";
+        break;
+      case 4:
+        priorityClass = "high";
+        priorityText = "High 🟠";
+        break;
+      case 3:
+        priorityClass = "medium";
+        priorityText = "Medium 🟡";
+        break;
+      case 2:
+        priorityClass = "low";
+        priorityText = "Low 🟢";
+        break;
+      default:
+        priorityClass = "very-low";
+        priorityText = "Very Low 🔵";
+    }
+
+    // Display the task information on the page
+    div.innerHTML = `
             <div class="task-card ${completed ? "completed" : ""}">
                 <div class="task-header">
                     <h3>${title}</h3>
@@ -183,24 +205,24 @@ function displayTasks() {
                 <p class="task-meta">Priority: <span class="${priorityClass}">${priorityText}</span></p>
             </div>
         `;
-        container.appendChild(div);
-    }
+    container.appendChild(div);
+  }
 
-    // Update the dashboard numbers whenever the list changes
-    displayStatistics(); 
+  // Update the statistics
+  displayStatistics();
 }
 
 function displayStatistics() {
-    const stats = document.getElementById("statistics-panel");
-    if (!stats) return;
+  const stats = document.getElementById("statistics-panel");
+  if (!stats) return;
 
-    // Calculate all the stats using our imported functions
-    const completedCount = countCompletedTasks(taskList);
-    const pendingCount = taskList.length - completedCount;
-    const avgPriority = calculateAveragePriority(taskList);
-    const highPriorityCount = getHighPriorityTasks(3).length; 
+  // Calculate the task statistics
+  const completedCount = countCompletedTasks(taskList);
+  const pendingCount = taskList.length - completedCount;
+  const avgPriority = calculateAveragePriority(taskList);
+  const highPriorityCount = getHighPriorityTasks(3).length;
 
-    stats.innerHTML = `
+  stats.innerHTML = `
         <div class="stats-header">
             <h3>Dashboard Statistics</h3>
         </div>
@@ -215,49 +237,52 @@ function displayStatistics() {
 }
 
 function handleTaskClick(event) {
-    if (!event.target) return;
+  if (!event.target) return;
 
-    // Find the closest task card that was clicked using the data-id attribute
-    const taskElement = event.target.closest(".task-item");
-    if (!taskElement) return;
-    
-    // Find the actual task object in our array
-    const taskId = parseInt(taskElement.dataset.id);
-    const targetTask = taskList.find(task => task.id === taskId);
-    
-    if (!targetTask) return;
+  // Find the task that was clicked
+  const taskElement = event.target.closest(".task-item");
+  if (!taskElement) return;
 
-    // Complete/Undo button clicked
-    if (event.target.classList.contains("toggle-btn")) {
-        targetTask.toggleCompletion();
+  // Get the matching task from the array
+  const taskId = parseInt(taskElement.dataset.id);
+  const targetTask = taskList.find((task) => task.id === taskId);
+
+  if (!targetTask) return;
+
+  // Toggle the task status
+  if (event.target.classList.contains("toggle-btn")) {
+    targetTask.toggleCompletion();
+    saveToStorage(taskList);
+    displayTasks();
+  }
+  // Edit the task
+  else if (event.target.classList.contains("edit-btn")) {
+    const newTitle = prompt("Edit task title:", targetTask.title);
+    if (newTitle !== null && newTitle.trim() !== "") {
+      targetTask.title = newTitle.trim();
+    }
+
+    const newDescription = prompt(
+      "Edit task description:",
+      targetTask.description,
+    );
+    if (newDescription !== null && newDescription.trim() !== "") {
+      targetTask.description = newDescription.trim();
+    }
+
+    // Save the changes and refresh the task list
+    saveToStorage(taskList);
+    displayTasks();
+  }
+  // Ask for confirmation before deleting the task
+  else if (event.target.classList.contains("delete-btn")) {
+    if (confirm("Are you sure you want to delete this task?")) {
+      const index = taskList.findIndex((task) => task.id === taskId);
+      if (index !== -1) {
+        taskList.splice(index, 1);
         saveToStorage(taskList);
         displayTasks();
-    } 
-    // Edit button clicked
-    else if (event.target.classList.contains("edit-btn")) {
-        const newTitle = prompt("Edit task title:", targetTask.title);
-        if (newTitle !== null && newTitle.trim() !== "") {
-            targetTask.title = newTitle.trim();
-        }
-
-        const newDescription = prompt("Edit task description:", targetTask.description);
-        if (newDescription !== null && newDescription.trim() !== "") {
-            targetTask.description = newDescription.trim();
-        }
-
-        // Only save and render if they actually clicked OK on the prompts
-        saveToStorage(taskList);
-        displayTasks();
+      }
     }
-    // Delete button clicked - ask for confirmation first so they don't accidentally wipe a task
-    else if (event.target.classList.contains("delete-btn")) {
-        if (confirm("Are you sure you want to delete this task?")) {
-            const index = taskList.findIndex(task => task.id === taskId);
-            if (index !== -1) {
-                taskList.splice(index, 1);
-                saveToStorage(taskList);
-                displayTasks();
-            }
-        }
-    }
+  }
 }
