@@ -1,50 +1,72 @@
-//Replaced var with const
-const priorities = ["low", "medium", "high"];
+/**
+ * Priority constants matching the 1-5 HTML UI to ensure a Single Source of Truth.
+ * @constant {Object}
+ */
+export const PRIORITIES = {
+  CRITICAL: 5,
+  HIGH: 4,
+  MEDIUM: 3,
+  LOW: 2,
+  VERY_LOW: 1
+};
 
-//Array destructuring
-const [lowPriority, mediumPriority, highPriority] = priorities;
-
-//Added JSON.stringify for proper storage
-function saveToStorage(data) {
-  if (!data) return;
-  localStorage.setItem("tasks", JSON.stringify(data));
+/**
+ * Safely saves data to local storage using try/catch and stringify validation.
+ * @param {Array} data - The data array to save.
+ */
+export function saveToStorage(data) {
+  try {
+    if (!Array.isArray(data)) throw new Error("Data must be an array");
+    localStorage.setItem("tasks", JSON.stringify(data));
+  } catch (error) {
+    // Uses optional chaining and nullish coalescing to prevent undefined errors
+    console.error("Storage Save Error:", error?.message ?? "Unknown error");
+  }
 }
 
-// Added JSON.parse to properly load objects
-function loadFromStorage() {
-  const data = localStorage.getItem("tasks");
-  return data ? JSON.parse(data) : [];
+/**
+ * Safely loads and parses data from local storage.
+ * @returns {Array} The parsed array or an empty array if corrupted.
+ */
+export function loadFromStorage() {
+  try {
+    const data = localStorage.getItem("tasks");
+    if (!data) return [];
+    
+    const parsed = JSON.parse(data);
+    if (!Array.isArray(parsed)) throw new Error("Corrupted storage format");
+    
+    return parsed;
+  } catch (error) {
+    console.error("Storage Load Error:", error?.message ?? "Unknown error");
+    return [];
+  }
 }
 
-//Returns a whole integer ID instead of a decimal
-function generateRandomId() {
+/**
+ * Returns a whole integer ID instead of a decimal.
+ * @returns {number} Random generated ID.
+ */
+export function generateRandomId() {
   return Math.floor(Math.random() * 1000000);
 }
 
-//Proper string manipulation (Pure Function)
-function formatTaskName(name) {
+/**
+ * Proper string manipulation (Pure Function).
+ * @param {string} name - Raw task name.
+ * @returns {string} Formatted task name.
+ */
+export function formatTaskName(name) {
   if (typeof name !== "string") return "";
   return name.trim().charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
 
-//Incorrect boolean logic and operators fixed
-function isHighPriority(task) {
-  if (!task || typeof task.priority === "undefined") {
-    return false;
-  }
-  //Using strict equality === instead of ==
-  if (task.priority === "high") {
-    return true; // Returning actual boolean
-  }
-  return false; // Returning actual boolean
+/**
+ * Validates if a task is high priority based on the numeric scale.
+ * @param {Object} task - The task to evaluate.
+ * @returns {boolean} True if priority is High or Critical (4 or 5).
+ */
+export function isHighPriority(task) {
+  // Uses optional chaining safely to avoid crashing on null objects
+  return (task?.priority ?? 0) >= PRIORITIES.HIGH;
 }
-
-//Proper module exports
-export {
-  priorities,
-  saveToStorage,
-  loadFromStorage,
-  generateRandomId,
-  formatTaskName,
-  isHighPriority,
-};
