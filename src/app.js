@@ -1,4 +1,4 @@
-// Task Management Application - Advanced Architecture
+// Task Management Application
 import { generateRandomId, PRIORITIES } from "./utils.js";
 
 // Global variables 

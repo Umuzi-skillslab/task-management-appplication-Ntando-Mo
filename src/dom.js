@@ -20,7 +20,8 @@ function setupEventListeners() {
   const savedTasks = loadFromStorage();
 
   if (savedTasks && savedTasks.length > 0) {
-    savedTasks.forEach((taskData) => {
+    // Use a for-of loop to go through saved tasks
+    for (const taskData of savedTasks) {
       // Recreate the Task objects so their methods still work
       const restoredTask = new Task(
         taskData.title,
@@ -28,9 +29,9 @@ function setupEventListeners() {
         taskData.priority,
       );
       restoredTask.id = taskData.id;
-      restoredTask.completed = taskData.completed;
+      restoredTask.completed = taskData.completed; 
       taskList.push(restoredTask);
-    });
+    }
     displayTasks();
   }
 
@@ -41,17 +42,13 @@ function setupEventListeners() {
   const titleInput = document.getElementById("title");
   const searchInput = document.getElementById("search-input");
   const sortBtn = document.getElementById("sort-priority-btn");
-  const filterBtns = document.querySelectorAll(".filter-btn");
+  const filterGroup = document.querySelector(".filter-sort-group");
 
   // Check the button exists before adding the event listener
-  if (addButton) {
-    addButton.addEventListener("click", handleAddTask);
-  }
-
+  addButton?.addEventListener("click", handleAddTask);
+  
   // Use event delegation to handle clicks on the task buttons
-  if (taskListContainer) {
-    taskListContainer.addEventListener("click", handleTaskClick);
-  }
+  taskListContainer?.addEventListener("click", handleTaskClick);
 
   // Allow Enter to add a task
   document.addEventListener("keydown", (e) => {
@@ -67,37 +64,30 @@ function setupEventListeners() {
 
   // Highlight the title input when it's selected
   if (titleInput) {
-    titleInput.addEventListener(
-      "focus",
-      () => (titleInput.style.outline = "2px solid #4CAF50"),
-    );
+    titleInput.addEventListener("focus", () => (titleInput.style.outline = "2px solid #4CAF50"));
     titleInput.addEventListener("blur", () => (titleInput.style.outline = ""));
   }
 
   // Update the task list while the user types
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      searchQuery = e.target.value;
-      displayTasks();
-    });
-  }
+  searchInput?.addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    displayTasks();
+  });
 
-  // Filter tasks based on the selected button
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+  // Filter tasks based on the selected button using event delegation
+  filterGroup?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("filter-btn")) {
       currentFilter = e.target.dataset.filter;
       displayTasks();
-    });
+    }
   });
 
   // Sort tasks from highest to lowest priority
-  if (sortBtn) {
-    sortBtn.addEventListener("click", () => {
-      taskList.sort((a, b) => b.priority - a.priority);
-      saveToStorage(taskList);
-      displayTasks();
-    });
-  }
+  sortBtn?.addEventListener("click", () => {
+    taskList.sort((a, b) => b.priority - a.priority);
+    saveToStorage(taskList);
+    displayTasks();
+  });
 }
 
 function handleAddTask(event) {
@@ -140,7 +130,7 @@ function handleAddTask(event) {
 function displayTasks() {
   const container = document.getElementById("task-list");
   if (!container) return;
-
+  
   // Clear the task list before displaying it again
   container.innerHTML = "";
 
@@ -152,10 +142,8 @@ function displayTasks() {
   );
 
   // Apply the selected filter
-  if (currentFilter === "active")
-    displayList = displayList.filter((t) => !t.completed);
-  if (currentFilter === "completed")
-    displayList = displayList.filter((t) => t.completed);
+  if (currentFilter === "active") displayList = displayList.filter((t) => !t.completed);
+  if (currentFilter === "completed") displayList = displayList.filter((t) => t.completed);
 
   for (const task of displayList) {
     const div = document.createElement("div");
@@ -220,7 +208,9 @@ function displayStatistics() {
   const completedCount = countCompletedTasks(taskList);
   const pendingCount = taskList.length - completedCount;
   const avgPriority = calculateAveragePriority(taskList);
-  const highPriorityCount = getHighPriorityTasks(3).length;
+  
+  // Get the number of high priority tasks
+  const highPriorityCount = getHighPriorityTasks(taskList, 3).length;
 
   stats.innerHTML = `
         <div class="stats-header">
@@ -238,7 +228,7 @@ function displayStatistics() {
 
 function handleTaskClick(event) {
   if (!event.target) return;
-
+  
   // Find the task that was clicked
   const taskElement = event.target.closest(".task-item");
   if (!taskElement) return;
@@ -246,7 +236,6 @@ function handleTaskClick(event) {
   // Get the matching task from the array
   const taskId = parseInt(taskElement.dataset.id);
   const targetTask = taskList.find((task) => task.id === taskId);
-
   if (!targetTask) return;
 
   // Toggle the task status
@@ -254,7 +243,7 @@ function handleTaskClick(event) {
     targetTask.toggleCompletion();
     saveToStorage(taskList);
     displayTasks();
-  }
+  } 
   // Edit the task
   else if (event.target.classList.contains("edit-btn")) {
     const newTitle = prompt("Edit task title:", targetTask.title);
@@ -262,18 +251,15 @@ function handleTaskClick(event) {
       targetTask.title = newTitle.trim();
     }
 
-    const newDescription = prompt(
-      "Edit task description:",
-      targetTask.description,
-    );
+    const newDescription = prompt("Edit task description:", targetTask.description);
     if (newDescription !== null && newDescription.trim() !== "") {
       targetTask.description = newDescription.trim();
     }
-
+    
     // Save the changes and refresh the task list
     saveToStorage(taskList);
     displayTasks();
-  }
+  } 
   // Ask for confirmation before deleting the task
   else if (event.target.classList.contains("delete-btn")) {
     if (confirm("Are you sure you want to delete this task?")) {
