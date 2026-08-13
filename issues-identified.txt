@@ -1,0 +1,57 @@
+1. Variables, Data Types & Operators
+
+Missing Declarations: taskList in app.js lacks a variable declaration keyword.
+
+Outdated Syntax: taskCounter uses var instead of let or const.
+
+Operator Misuse: updateTaskPriority uses assignment (=) instead of strict equality (===) in its conditional. isHighPriority uses loose equality (==).
+
+Missing Type Checks: Functions like updateTaskPriority lack typeof validation for parameters.
+
+2. Control Flow
+
+Off-By-One Error: displayAllTasks iterates with <= taskList.length, which will return undefined on the final pass.
+
+Infinite Loop: findTaskByTitle uses a while loop but is missing the i++ incrementor.
+
+Outdated Loops: getHighPriorityTasks uses an imperative for loop instead of a for-of loop.
+
+3. Functions
+
+Missing Parameters: findTaskByTitle references a title variable but is missing it in the function signature.
+
+Broken Recursion: countCompletedTasks is missing a base case, leading to a stack overflow.
+
+Missing Functional Programming: The codebase lacks array methods (map, filter, reduce) and pure functions.
+
+4. Classes & OOP
+
+Missing Properties & Methods: The Task class is missing an id property in its constructor and a toggleCompletion method.
+
+Broken Inheritance: The SubTask constructor fails to call super(), breaking the inheritance chain.
+
+Incomplete Objects: The TaskManager object is missing functional methods to add and manipulate tasks.
+
+5. Modern JavaScript & Modules
+
+String Concatenation: Task.getInfo() and displayTasks use + for strings instead of template literals.
+
+Missing Destructuring: getTaskDetails manually extracts properties instead of using object destructuring.
+
+Missing Spread Operator: mergeTasks pushes items manually via loops instead of using the spread operator.
+
+No Modules: The application lacks ES6 export and import statements.
+
+6. DOM Manipulation & Storage
+
+Invalid Selectors: setupEventListeners incorrectly uses .add-task-btn inside getElementById.
+
+Unsafe Execution: Event listeners lack null checks, and setup is not wrapped in DOMContentLoaded.
+
+Broken JSON: saveToStorage and loadFromStorage do not use JSON.stringify or JSON.parse.
+
+7. Testing
+
+Incomplete Coverage: Tests are missing for recursion, edge cases, and most functions.
+
+State Pollution: app.test.js lacks a beforeEach block to reset arrays between tests.
