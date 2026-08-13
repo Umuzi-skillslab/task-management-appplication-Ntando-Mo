@@ -1,8 +1,21 @@
-// Proper imports from the src folder
+// Setup a localStorage mock for testing storage functions
+const localStorageMock = (function() {
+  let store = {};
+  return {
+    getItem: key => store[key] || null,
+    setItem: (key, value) => { store[key] = value.toString(); },
+    clear: () => { store = {}; }
+  };
+})();
+Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+
+// Imports from the src folder
 import {
   formatTaskName,
   generateRandomId,
   isHighPriority,
+  saveToStorage,
+  loadFromStorage,
 } from "../src/utils.js";
 import {
   Task,
@@ -17,6 +30,13 @@ import {
   countCompletedTasks,
   getTaskDetails,
 } from "../src/app.js";
+
+// Centralized state reset before every single test
+beforeEach(() => {
+  taskList.length = 0;
+  global.localStorage.clear();
+  jest.clearAllMocks();
+});
 
 describe("Task Class", () => {
   test("should create a task with all properties", () => {
@@ -40,11 +60,6 @@ describe("Task Class", () => {
 });
 
 describe("Task Functions", () => {
-  //Added beforeEach to reset taskList
-  beforeEach(() => {
-    taskList.length = 0;
-  });
-
   test("should add task directly to taskList array", () => {
     addTask("New Task", "Test", 2);
     expect(taskList.length).toBe(1);
@@ -95,8 +110,8 @@ describe("Array Operations", () => {
     addTask("Low Task", "Desc", 1);
     addTask("High Task", "Desc", 5);
 
-    // Let it filter the global taskList
-    const high = getHighPriorityTasks(3);
+    // Pass the array into the pure function
+    const high = getHighPriorityTasks(taskList, 3);
     expect(high[0].priority).toBe(5);
   });
 
@@ -109,8 +124,6 @@ describe("Array Operations", () => {
     expect(countCompletedTasks(mockTasks)).toBe(2);
   });
 });
-
-// Missing Describe Blocks Added:
 
 describe("SubTask class and inheritance", () => {
   test("SubTask inherits from Task and overrides getInfo", () => {
@@ -139,6 +152,7 @@ describe("Module exports/imports", () => {
     expect(generateRandomId).toBeDefined();
   });
 });
+
 describe("Error Handling", () => {
   test("updateTaskPriority with invalid data types returns false", () => {
     addTask("Invalid Test", "Desc", 1);
@@ -151,6 +165,19 @@ describe("Error Handling", () => {
     // Passing null or numbers instead of a valid string title
     expect(findTaskByTitle(null)).toBeUndefined();
     expect(findTaskByTitle(999)).toBeUndefined();
+  });
+});
+
+describe("Storage / LocalStorage under JSDOM", () => {
+  test("saveToStorage and loadFromStorage should save and load tasks correctly", () => {
+    const testTasks = [{ id: 1, title: "Store Task", completed: false }];
+    saveToStorage(testTasks);
+    const loaded = loadFromStorage();
+    expect(loaded).toEqual(testTasks);
+  });
+
+  test("loadFromStorage returns empty array if nothing is saved", () => {
+    expect(loadFromStorage()).toEqual([]);
   });
 });
 
@@ -174,7 +201,7 @@ describe("Edge Cases", () => {
     addTask("Low Task 2", "Desc", 1);
 
     // Searching for priority 5 should return an empty array, not undefined or an error
-    const highPriority = getHighPriorityTasks(5);
+    const highPriority = getHighPriorityTasks(taskList, 5);
     expect(highPriority.length).toBe(0);
     expect(Array.isArray(highPriority)).toBe(true);
   });
